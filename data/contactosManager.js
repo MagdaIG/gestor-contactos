@@ -25,13 +25,14 @@ class ContactosManager {
 
             const contactos = data.trim().split('\n').map(line => {
                 const parts = line.split('|');
-                const [id, nombre, telefono, email, color] = parts;
+                const [id, nombre, telefono, email, color, emoticon] = parts;
                 return {
                     id: parseInt(id),
                     nombre: nombre || '',
                     telefono: telefono || '',
                     email: email || '',
-                    color: color || '#FFB3BA' // Color por defecto
+                    color: color || '#FFB3BA', // Color por defecto
+                    emoticon: emoticon || '' // Emoticon por defecto (vacío)
                 };
             });
 
@@ -59,7 +60,7 @@ class ContactosManager {
     }
 
     // Agregar nuevo contacto
-    addContacto(nombre, telefono, email, color = '#FFB3BA') {
+    addContacto(nombre, telefono, email, color = '#FFB3BA', emoticon = '') {
         try {
             const contactos = this.getAllContactos();
             const nuevoId = this.getNextId();
@@ -68,7 +69,8 @@ class ContactosManager {
                 nombre: nombre.trim(),
                 telefono: telefono.trim(),
                 email: email.trim(),
-                color: color
+                color: color,
+                emoticon: emoticon
             };
 
             contactos.push(nuevoContacto);
@@ -81,7 +83,7 @@ class ContactosManager {
     }
 
     // Actualizar contacto existente
-    updateContacto(id, nombre, telefono, email, color = '#FFB3BA') {
+    updateContacto(id, nombre, telefono, email, color = '#FFB3BA', emoticon = '') {
         try {
             const contactos = this.getAllContactos();
             const index = contactos.findIndex(contacto => contacto.id === parseInt(id));
@@ -95,7 +97,8 @@ class ContactosManager {
                 nombre: nombre.trim(),
                 telefono: telefono.trim(),
                 email: email.trim(),
-                color: color
+                color: color,
+                emoticon: emoticon
             };
 
             this.saveContactos(contactos);
@@ -129,7 +132,7 @@ class ContactosManager {
     saveContactos(contactos) {
         try {
             const data = contactos.map(contacto =>
-                `${contacto.id}|${contacto.nombre}|${contacto.telefono}|${contacto.email}|${contacto.color || '#FFB3BA'}`
+                `${contacto.id}|${contacto.nombre}|${contacto.telefono}|${contacto.email}|${contacto.color || '#FFB3BA'}|${contacto.emoticon || ''}`
             ).join('\n');
 
             fs.writeFileSync(CONTACTOS_FILE, data, 'utf8');

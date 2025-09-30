@@ -37,35 +37,35 @@ router.get('/nuevo', (req, res) => {
     });
 });
 
-    // Procesar nuevo contacto
-    router.post('/nuevo', (req, res) => {
-        try {
-            const { nombre, telefono, email, color } = req.body;
+// Procesar nuevo contacto
+router.post('/nuevo', (req, res) => {
+    try {
+        const { nombre, telefono, email, color, emoticon } = req.body;
 
-            // Validación básica
-            if (!nombre || !telefono || !email) {
-                return res.render('formulario', {
-                    title: 'Agregar Nuevo Contacto',
-                    contacto: { nombre, telefono, email, color },
-                    action: '/nuevo',
-                    method: 'POST',
-                    error: 'Todos los campos son obligatorios'
-                });
-            }
-
-            const nuevoContacto = contactosManager.addContacto(nombre, telefono, email, color);
-            res.redirect('/?message=Contacto agregado exitosamente');
-        } catch (error) {
-            console.error('Error al agregar contacto:', error);
-            res.render('formulario', {
+        // Validación básica
+        if (!nombre || !telefono || !email) {
+            return res.render('formulario', {
                 title: 'Agregar Nuevo Contacto',
-                contacto: req.body,
+                contacto: { nombre, telefono, email, color, emoticon },
                 action: '/nuevo',
                 method: 'POST',
-                error: 'Error al agregar el contacto'
+                error: 'Todos los campos son obligatorios'
             });
         }
-    });
+
+        const nuevoContacto = contactosManager.addContacto(nombre, telefono, email, color, emoticon);
+        res.redirect('/?message=Contacto agregado exitosamente');
+    } catch (error) {
+        console.error('Error al agregar contacto:', error);
+        res.render('formulario', {
+            title: 'Agregar Nuevo Contacto',
+            contacto: req.body,
+            action: '/nuevo',
+            method: 'POST',
+            error: 'Error al agregar el contacto'
+        });
+    }
+});
 
 // Mostrar formulario para editar contacto
 router.get('/editar/:id', (req, res) => {
@@ -88,36 +88,36 @@ router.get('/editar/:id', (req, res) => {
     }
 });
 
-    // Procesar edición de contacto
-    router.post('/editar/:id', (req, res) => {
-        try {
-            const { nombre, telefono, email, color } = req.body;
-            const id = req.params.id;
+// Procesar edición de contacto
+router.post('/editar/:id', (req, res) => {
+    try {
+        const { nombre, telefono, email, color, emoticon } = req.body;
+        const id = req.params.id;
 
-            // Validación básica
-            if (!nombre || !telefono || !email) {
-                return res.render('formulario', {
-                    title: 'Editar Contacto',
-                    contacto: { id, nombre, telefono, email, color },
-                    action: `/editar/${id}`,
-                    method: 'POST',
-                    error: 'Todos los campos son obligatorios'
-                });
-            }
-
-            contactosManager.updateContacto(id, nombre, telefono, email, color);
-            res.redirect('/?message=Contacto actualizado exitosamente');
-        } catch (error) {
-            console.error('Error al actualizar contacto:', error);
-            res.render('formulario', {
+        // Validación básica
+        if (!nombre || !telefono || !email) {
+            return res.render('formulario', {
                 title: 'Editar Contacto',
-                contacto: { ...req.body, id: req.params.id },
-                action: `/editar/${req.params.id}`,
+                contacto: { id, nombre, telefono, email, color, emoticon },
+                action: `/editar/${id}`,
                 method: 'POST',
-                error: 'Error al actualizar el contacto'
+                error: 'Todos los campos son obligatorios'
             });
         }
-    });
+
+        contactosManager.updateContacto(id, nombre, telefono, email, color, emoticon);
+        res.redirect('/?message=Contacto actualizado exitosamente');
+    } catch (error) {
+        console.error('Error al actualizar contacto:', error);
+        res.render('formulario', {
+            title: 'Editar Contacto',
+            contacto: { ...req.body, id: req.params.id },
+            action: `/editar/${req.params.id}`,
+            method: 'POST',
+            error: 'Error al actualizar el contacto'
+        });
+    }
+});
 
 // Eliminar contacto
 router.post('/eliminar/:id', (req, res) => {

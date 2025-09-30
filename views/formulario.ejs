@@ -41,44 +41,75 @@
                 </div>
 
                 <form action="<%= action %>" method="<%= method %>" class="contact-form" id="contactForm">
-                    <!-- Sección de imagen y color -->
-                    <div class="form-section-header">
-                        <div class="contact-preview-form">
-                            <div class="preview-avatar-form">
-                                <img src="/images/contact.png" alt="Avatar de contacto" class="preview-avatar-image" id="previewAvatarImage">
-                            </div>
-                            <div class="color-selector">
-                                <label class="form-label">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M8.5 12L10.5 14L15.5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    Color de la tarjeta:
-                                </label>
-                                <div class="color-palette">
-                                    <%
-                                    const coloresPasteles = [
-                                        '#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF',
-                                        '#E1BAFF', '#FFBAE1', '#FFE1BA', '#B3FFBA', '#BAFFE1',
-                                        '#E1FFBA', '#FFE1B3', '#BAE1E1', '#E1BAE1', '#FFB3E1'
-                                    ];
-                                    coloresPasteles.forEach((color, index) => {
-                                        const isSelected = contacto && contacto.color === color;
-                                    %>
-                                        <button
-                                            type="button"
-                                            class="color-option <%= isSelected ? 'selected' : '' %>"
-                                            style="background-color: <%= color %>"
-                                            data-color="<%= color %>"
-                                            onclick="selectColor('<%= color %>')"
-                                            title="Color <%= index + 1 %>"
-                                        ></button>
-                                    <% }); %>
+                        <!-- Sección de imagen, color y emoticón -->
+                        <div class="form-section-header">
+                            <div class="contact-preview-form">
+                                <div class="preview-avatar-form">
+                                    <img src="/images/contact.png" alt="Avatar de contacto" class="preview-avatar-image" id="previewAvatarImage">
                                 </div>
-                                <input type="hidden" id="colorSeleccionado" name="color" value="<%= contacto ? contacto.color || '#FFB3BA' : '#FFB3BA' %>">
+                                <div class="form-selectors">
+                                    <div class="color-selector">
+                                        <label class="form-label">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8.5 12L10.5 14L15.5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            Color de la tarjeta:
+                                        </label>
+                                        <div class="color-palette">
+                                            <%
+                                            const coloresPasteles = [
+                                                '#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF',
+                                                '#E1BAFF', '#FFBAE1', '#FFE1BA', '#B3FFBA', '#BAFFE1',
+                                                '#E1FFBA', '#FFE1B3', '#BAE1E1', '#E1BAE1', '#FFB3E1'
+                                            ];
+                                            coloresPasteles.forEach((color, index) => {
+                                                const isSelected = contacto && contacto.color === color;
+                                            %>
+                                                <button
+                                                    type="button"
+                                                    class="color-option <%= isSelected ? 'selected' : '' %>"
+                                                    style="background-color: <%= color %>"
+                                                    data-color="<%= color %>"
+                                                    onclick="selectColor('<%= color %>')"
+                                                    title="Color <%= index + 1 %>"
+                                                ></button>
+                                            <% }); %>
+                                        </div>
+                                        <input type="hidden" id="colorSeleccionado" name="color" value="<%= contacto ? contacto.color || '#FFB3BA' : '#FFB3BA' %>">
+                                    </div>
+
+                                    <div class="emoticon-selector">
+                                        <label class="form-label">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <line x1="9" y1="9" x2="9.01" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <line x1="15" y1="9" x2="15.01" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            Emoticon del contacto:
+                                        </label>
+                                        <div class="emoticon-palette">
+                                            <%
+                                            const emoticones = ['', '🥰', '🤡', '☠️', '🤬', '👄', '👣', '🐷', '❤️', '💔', '🌸'];
+                                            emoticones.forEach((emoticon, index) => {
+                                                const isSelected = contacto && contacto.emoticon === emoticon;
+                                                const displayText = emoticon === '' ? 'Sin emoticon' : emoticon;
+                                            %>
+                                                <button
+                                                    type="button"
+                                                    class="emoticon-option <%= isSelected ? 'selected' : '' %> <%= emoticon === '' ? 'no-emoticon' : '' %>"
+                                                    data-emoticon="<%= emoticon %>"
+                                                    onclick="selectEmoticon('<%= emoticon %>')"
+                                                    title="<%= emoticon === '' ? 'Sin emoticon' : 'Emoticon ' + index %>"
+                                                ><%= displayText %></button>
+                                            <% }); %>
+                                        </div>
+                                        <input type="hidden" id="emoticonSeleccionado" name="emoticon" value="<%= contacto ? contacto.emoticon || '' : '' %>">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
                     <div class="form-group">
                         <label for="nombre" class="form-label">
@@ -327,22 +358,36 @@
             }
         });
 
-        // Función para seleccionar color
-        function selectColor(color) {
-            // Remover selección anterior
-            document.querySelectorAll('.color-option').forEach(option => {
-                option.classList.remove('selected');
-            });
+            // Función para seleccionar color
+            function selectColor(color) {
+                // Remover selección anterior
+                document.querySelectorAll('.color-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
 
-            // Agregar selección al color elegido
-            document.querySelector(`[data-color="${color}"]`).classList.add('selected');
+                // Agregar selección al color elegido
+                document.querySelector(`[data-color="${color}"]`).classList.add('selected');
 
-            // Actualizar el input hidden
-            document.getElementById('colorSeleccionado').value = color;
+                // Actualizar el input hidden
+                document.getElementById('colorSeleccionado').value = color;
 
-            // Actualizar la vista previa de la tarjeta
-            updateCardPreview(color);
-        }
+                // Actualizar la vista previa de la tarjeta
+                updateCardPreview(color);
+            }
+
+            // Función para seleccionar emoticon
+            function selectEmoticon(emoticon) {
+                // Remover selección anterior
+                document.querySelectorAll('.emoticon-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+
+                // Agregar selección al emoticon elegido
+                document.querySelector(`[data-emoticon="${emoticon}"]`).classList.add('selected');
+
+                // Actualizar el input hidden
+                document.getElementById('emoticonSeleccionado').value = emoticon;
+            }
 
         // Función para actualizar la vista previa de la tarjeta
         function updateCardPreview(color) {

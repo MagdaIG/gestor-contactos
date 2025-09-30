@@ -125,15 +125,22 @@
                             const color = contacto.color || coloresPasteles[index % coloresPasteles.length];
                         %>
                             <div class="contact-card" data-contact-id="<%= contacto.id %>" style="background-color: <%= color %>">
-                                <div class="contact-header">
-                                    <div class="contact-avatar">
-                                        <img src="/images/contact.png" alt="Avatar de contacto" class="avatar-image">
-                                    </div>
-                                    <div class="contact-info">
-                                        <h3 class="contact-name">NAME:</h3>
-                                        <p class="contact-value"><%= contacto.nombre %></p>
-                                    </div>
-                                    <div class="contact-actions">
+                                    <div class="contact-header">
+                                        <div class="contact-avatar">
+                                            <img src="/images/contact.png" alt="Avatar de contacto" class="avatar-image">
+                                        </div>
+                                        <div class="contact-info">
+                                            <div class="contact-name-row">
+                                                <h3 class="contact-name">NAME:</h3>
+                                                <% if (contacto.emoticon && contacto.emoticon.trim() !== '') { %>
+                                                    <div class="contact-emoticon-circle">
+                                                        <span class="contact-emoticon"><%= contacto.emoticon %></span>
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                            <p class="contact-value"><%= contacto.nombre %></p>
+                                        </div>
+                                        <div class="contact-actions">
                                         <button class="action-icon favorite-btn" onclick="toggleFavorite(<%= contacto.id %>)" title="Marcar como favorito">
                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -161,10 +168,10 @@
                                         <span class="detail-label">PHONE:</span>
                                         <span class="detail-value"><%= contacto.telefono %></span>
                                     </div>
-                                    <div class="contact-detail">
-                                        <span class="detail-label">EMAIL:</span>
-                                        <span class="detail-value"><%= contacto.email %></span>
-                                    </div>
+                                        <div class="contact-detail">
+                                            <span class="detail-label">EMAIL:</span>
+                                            <span class="detail-value"><%= contacto.email %></span>
+                                        </div>
                                     <div class="contact-detail">
                                         <span class="detail-label">ADDRESS:</span>
                                         <span class="detail-value">Dirección no disponible</span>
