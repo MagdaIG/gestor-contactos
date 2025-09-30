@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Mi Agenda</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <span class="logo-icon">📱</span>
+                Mi Agenda
+            </h1>
+            <nav class="nav">
+                <a href="/" class="nav-link">Inicio</a>
+                <a href="/nuevo" class="nav-link">Nuevo Contacto</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <% if (typeof message !== 'undefined' && message) { %>
+                <div class="alert alert-success">
+                    <span class="alert-icon">✓</span>
+                    <%= message %>
+                </div>
+            <% } %>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error">
+                    <span class="alert-icon">⚠</span>
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <%- body %>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Mi Agenda de Contactos. Desarrollado con Node.js y Express.</p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

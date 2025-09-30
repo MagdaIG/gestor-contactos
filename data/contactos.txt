@@ -1,0 +1,15 @@
+1|Ana García|555-1001|ana.garcia@email.com|#FFB3BA
+2|Bruno López|555-1002|bruno.lopez@email.com|#FFDFBA
+3|Carlos Martínez|555-1003|carlos.martinez@email.com|#FFFFBA
+4|Diana Rodríguez|555-1004|diana.rodriguez@email.com|#BAFFC9
+5|Elena Sánchez|555-1005|elena.sanchez@email.com|#BAE1FF
+6|Fernando Torres|555-1006|fernando.torres@email.com|#E1BAFF
+7|Gabriela Flores|555-1007|gabriela.flores@email.com|#FFBAE1
+8|Héctor Morales|555-1008|hector.morales@email.com|#FFE1BA
+9|Isabel Vargas|555-1009|isabel.vargas@email.com|#B3FFBA
+10|Javier Ruiz|555-1010|javier.ruiz@email.com|#BAFFE1
+11|Karla Jiménez|555-1011|karla.jimenez@email.com|#E1FFBA
+12|Luis Herrera|555-1012|luis.herrera@email.com|#FFE1B3
+13|María González|555-1013|maria.gonzalez@email.com|#BAE1E1
+14|Nicolás Pérez|555-1014|nicolas.perez@email.com|#E1BAE1
+15|Olivia Ramírez|555-1015|olivia.ramirez@email.com|#FFB3E1
