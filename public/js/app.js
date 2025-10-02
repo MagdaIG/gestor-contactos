@@ -438,3 +438,682 @@ document.addEventListener('keydown', function(e) {
         toggleSearch();
     }
 });
+
+// ===== SISTEMA DE TOAST NOTIFICATIONS =====
+
+// Crear contenedor de toasts si no existe
+function createToastContainer() {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    return container;
+}
+
+// Función para mostrar toast
+function showToast(message, type = 'info', duration = 4000) {
+    const container = createToastContainer();
+
+    // Crear toast
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    // Iconos para cada tipo
+    const icons = {
+        success: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>`,
+        error: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2"/>
+                  <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2"/>
+                </svg>`,
+        warning: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2"/>
+                  </svg>`,
+        info: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                 <line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2"/>
+                 <line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2"/>
+               </svg>`
+    };
+
+    const titles = {
+        success: 'Éxito',
+        error: 'Error',
+        warning: 'Advertencia',
+        info: 'Información'
+    };
+
+    toast.innerHTML = `
+        <div class="toast-header">
+            <div class="toast-title">
+                ${icons[type]}
+                ${titles[type]}
+            </div>
+            <button class="toast-close" onclick="removeToast(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+        </div>
+        <div class="toast-message">${message}</div>
+    `;
+
+    container.appendChild(toast);
+
+    // Mostrar toast con animación
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+
+    // Auto-remover después del tiempo especificado
+    if (duration > 0) {
+        setTimeout(() => {
+            removeToast(toast.querySelector('.toast-close'));
+        }, duration);
+    }
+
+    return toast;
+}
+
+// Función para remover toast
+function removeToast(closeBtn) {
+    const toast = closeBtn.closest('.toast');
+    if (toast) {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }
+}
+
+// ===== SISTEMA DE LOADING STATES =====
+
+// Función para mostrar loading overlay
+function showLoading(message = 'Cargando...') {
+    let overlay = document.querySelector('.loading-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = `
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 1rem; color: var(--text-color);">${message}</p>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    overlay.classList.add('active');
+    return overlay;
+}
+
+// Función para ocultar loading overlay
+function hideLoading() {
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+        }, 300);
+    }
+}
+
+// ===== BÚSQUEDA EN TIEMPO REAL =====
+
+// Función para búsqueda en tiempo real
+function initRealTimeSearch() {
+    const searchInput = document.querySelector('.search-input');
+    if (!searchInput) return;
+
+    let searchTimeout;
+    const searchResults = document.createElement('div');
+    searchResults.className = 'search-results';
+    searchInput.parentNode.appendChild(searchResults);
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            searchResults.classList.remove('show');
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            performRealTimeSearch(query, searchResults);
+        }, 300);
+    });
+
+    // Ocultar resultados al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.classList.remove('show');
+        }
+    });
+}
+
+// Función para realizar búsqueda en tiempo real
+function performRealTimeSearch(query, resultsContainer) {
+    // Simular búsqueda (en una app real, esto sería una llamada AJAX)
+    const contacts = Array.from(document.querySelectorAll('.contact-card'));
+    const matches = contacts.filter(card => {
+        const name = card.querySelector('.contact-value')?.textContent.toLowerCase() || '';
+        const phone = card.querySelector('.detail-value')?.textContent.toLowerCase() || '';
+        const email = card.querySelectorAll('.detail-value')[1]?.textContent.toLowerCase() || '';
+
+        return name.includes(query.toLowerCase()) ||
+               phone.includes(query.toLowerCase()) ||
+               email.includes(query.toLowerCase());
+    });
+
+    if (matches.length === 0) {
+        resultsContainer.innerHTML = '<div class="search-result-item">No se encontraron resultados</div>';
+    } else {
+        resultsContainer.innerHTML = matches.slice(0, 5).map(card => {
+            const name = card.querySelector('.contact-value')?.textContent || '';
+            const phone = card.querySelector('.detail-value')?.textContent || '';
+            return `
+                <div class="search-result-item" onclick="scrollToContact('${name}')">
+                    <strong>${name}</strong><br>
+                    <small>${phone}</small>
+                </div>
+            `;
+        }).join('');
+    }
+
+    resultsContainer.classList.add('show');
+}
+
+// Función para hacer scroll a un contacto específico
+function scrollToContact(contactName) {
+    const contactCard = Array.from(document.querySelectorAll('.contact-card'))
+        .find(card => card.querySelector('.contact-value')?.textContent === contactName);
+
+    if (contactCard) {
+        contactCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        contactCard.style.animation = 'pulse 0.6s ease-in-out';
+        setTimeout(() => {
+            contactCard.style.animation = '';
+        }, 600);
+    }
+
+    // Ocultar resultados de búsqueda
+    const searchResults = document.querySelector('.search-results');
+    if (searchResults) {
+        searchResults.classList.remove('show');
+    }
+}
+
+// ===== MEJORAS DE MOBILE =====
+
+// Función para mejorar experiencia móvil
+function initMobileImprovements() {
+    // Touch gestures para eliminar contactos
+    const contactCards = document.querySelectorAll('.contact-card');
+
+    contactCards.forEach(card => {
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+
+        card.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+        });
+
+        card.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+
+            currentX = e.touches[0].clientX;
+            const diffX = startX - currentX;
+
+            if (diffX > 50) {
+                this.style.transform = `translateX(-${Math.min(diffX, 100)}px)`;
+            }
+        });
+
+        card.addEventListener('touchend', function() {
+            if (!isDragging) return;
+            isDragging = false;
+
+            const diffX = startX - currentX;
+
+            if (diffX > 100) {
+                // Mostrar opción de eliminar
+                showToast('Desliza hacia la derecha para cancelar o mantén presionado para eliminar', 'info', 3000);
+            } else {
+                // Volver a posición original
+                this.style.transform = 'translateX(0)';
+            }
+        });
+    });
+}
+
+// ===== INICIALIZACIÓN MEJORADA =====
+
+// Actualizar función de inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar funcionalidades existentes
+    initAnimations();
+    initSearch();
+    initAlerts();
+    initContactCards();
+
+    // Inicializar nuevas funcionalidades
+    initRealTimeSearch();
+    initMobileImprovements();
+
+    // Mostrar toast de bienvenida
+    setTimeout(() => {
+        showToast('¡Bienvenido al Gestor de Contactos!', 'success', 3000);
+    }, 1000);
+
+    // Inicializar navegación por teclado
+    initKeyboardNavigation();
+});
+
+// ===== NAVEGACIÓN POR TECLADO =====
+
+// Función para inicializar navegación por teclado
+function initKeyboardNavigation() {
+    // Navegación con flechas en las tarjetas de contacto
+    const contactCards = document.querySelectorAll('.contact-card');
+    let currentIndex = -1;
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+
+            if (e.key === 'ArrowDown') {
+                currentIndex = Math.min(currentIndex + 1, contactCards.length - 1);
+            } else {
+                currentIndex = Math.max(currentIndex - 1, 0);
+            }
+
+            // Remover foco anterior
+            contactCards.forEach(card => card.classList.remove('keyboard-focused'));
+
+            // Agregar foco al elemento actual
+            if (contactCards[currentIndex]) {
+                contactCards[currentIndex].classList.add('keyboard-focused');
+                contactCards[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Enter para activar el elemento enfocado
+        if (e.key === 'Enter' && currentIndex >= 0) {
+            const focusedCard = contactCards[currentIndex];
+            if (focusedCard) {
+                const editBtn = focusedCard.querySelector('.edit-btn');
+                if (editBtn) {
+                    editBtn.click();
+                }
+            }
+        }
+
+        // Escape para limpiar foco
+        if (e.key === 'Escape') {
+            contactCards.forEach(card => card.classList.remove('keyboard-focused'));
+            currentIndex = -1;
+        }
+    });
+}
+
+// ===== MEJORAS DE ACCESIBILIDAD =====
+
+// Función para agregar etiquetas ARIA
+function initAccessibility() {
+    // Agregar roles ARIA a elementos interactivos
+    const contactCards = document.querySelectorAll('.contact-card');
+    contactCards.forEach((card, index) => {
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', `Contacto ${index + 1}`);
+
+        // Agregar eventos de teclado
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const editBtn = this.querySelector('.edit-btn');
+                if (editBtn) {
+                    editBtn.click();
+                }
+            }
+        });
+    });
+
+    // Mejorar etiquetas de formularios
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        if (!input.getAttribute('aria-label') && !input.getAttribute('aria-labelledby')) {
+            const label = document.querySelector(`label[for="${input.id}"]`);
+            if (label) {
+                input.setAttribute('aria-label', label.textContent.trim());
+            }
+        }
+    });
+
+    // Agregar anuncios para lectores de pantalla
+    const liveRegion = document.createElement('div');
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.setAttribute('aria-atomic', 'true');
+    liveRegion.className = 'sr-only';
+    liveRegion.style.position = 'absolute';
+    liveRegion.style.left = '-10000px';
+    liveRegion.style.width = '1px';
+    liveRegion.style.height = '1px';
+    liveRegion.style.overflow = 'hidden';
+    document.body.appendChild(liveRegion);
+
+    // Función para anunciar cambios
+    window.announceToScreenReader = function(message) {
+        liveRegion.textContent = message;
+        setTimeout(() => {
+            liveRegion.textContent = '';
+        }, 1000);
+    };
+}
+
+// ===== MEJORAS DE PERFORMANCE =====
+
+// Función para lazy loading de imágenes
+function initLazyLoading() {
+    const images = document.querySelectorAll('img[data-src]');
+
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+
+        images.forEach(img => imageObserver.observe(img));
+    } else {
+        // Fallback para navegadores que no soportan IntersectionObserver
+        images.forEach(img => {
+            img.src = img.dataset.src;
+            img.classList.remove('lazy');
+        });
+    }
+}
+
+// ===== INICIALIZACIÓN COMPLETA =====
+
+// Actualizar función de inicialización principal
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar funcionalidades existentes
+    initAnimations();
+    initSearch();
+    initAlerts();
+    initContactCards();
+
+    // Inicializar nuevas funcionalidades
+    initRealTimeSearch();
+    initMobileImprovements();
+    initKeyboardNavigation();
+    initAccessibility();
+    initLazyLoading();
+
+    // Inicializar modo oscuro
+
+    // Inicializar drag and drop
+    initDragAndDrop();
+
+    // Mostrar toast de bienvenida
+    setTimeout(() => {
+        showToast('¡Bienvenido al Gestor de Contactos!', 'success', 3000);
+        announceToScreenReader('Página cargada correctamente. Usa las flechas del teclado para navegar entre contactos.');
+    }, 1000);
+});
+
+// ===== MODO OSCURO =====
+
+// Función para inicializar el modo oscuro
+function initDarkMode() {
+    // Detectar preferencia del sistema
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Obtener preferencia guardada o usar la del sistema
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+
+    // Aplicar tema inicial
+    setTheme(prefersDark ? 'dark' : 'light');
+
+    // Escuchar cambios en la preferencia del sistema
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            setTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+}
+
+// Función para cambiar tema
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+
+    // Guardar preferencia
+    localStorage.setItem('theme', newTheme);
+
+    // Mostrar notificación
+    showToast(`Modo ${newTheme === 'dark' ? 'oscuro' : 'claro'} activado`, 'info', 2000);
+
+    // Anunciar cambio para lectores de pantalla
+    announceToScreenReader(`Tema cambiado a modo ${newTheme === 'dark' ? 'oscuro' : 'claro'}`);
+}
+
+// Función para establecer tema
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+
+    // Actualizar iconos del botón
+    const sunIcon = document.querySelector('.sun-icon');
+    const moonIcon = document.querySelector('.moon-icon');
+
+    if (sunIcon && moonIcon) {
+        if (theme === 'dark') {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        } else {
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+        }
+    }
+
+    // Agregar clase de transición temporal
+    document.body.classList.add('theme-transition');
+    setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+    }, 300);
+}
+
+// ===== DRAG & DROP =====
+
+let isReorderMode = false;
+let draggedElement = null;
+let draggedIndex = -1;
+
+// Función para inicializar drag and drop
+function initDragAndDrop() {
+    const contactCards = document.querySelectorAll('.contact-card');
+
+    contactCards.forEach((card, index) => {
+        // Eventos de drag and drop
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+        card.addEventListener('dragover', handleDragOver);
+        card.addEventListener('drop', handleDrop);
+        card.addEventListener('dragenter', handleDragEnter);
+        card.addEventListener('dragleave', handleDragLeave);
+
+        // Prevenir drag por defecto en elementos interactivos
+        const interactiveElements = card.querySelectorAll('button, a, input');
+        interactiveElements.forEach(el => {
+            el.addEventListener('dragstart', (e) => e.preventDefault());
+        });
+    });
+}
+
+// Función para activar/desactivar modo de reordenamiento
+function toggleReorderMode() {
+    isReorderMode = !isReorderMode;
+    const container = document.querySelector('.contacts-container');
+    const reorderBtn = document.querySelector('.reorder-toggle');
+
+    if (isReorderMode) {
+        container.classList.add('reorder-mode');
+        reorderBtn.style.background = 'var(--primary-color)';
+        reorderBtn.style.color = 'var(--white)';
+        showToast('Modo de reordenamiento activado. Arrastra los contactos para cambiar su orden.', 'info', 4000);
+        announceToScreenReader('Modo de reordenamiento activado. Puedes arrastrar los contactos para cambiar su orden.');
+    } else {
+        container.classList.remove('reorder-mode');
+        reorderBtn.style.background = '';
+        reorderBtn.style.color = '';
+        showToast('Modo de reordenamiento desactivado.', 'info', 2000);
+        announceToScreenReader('Modo de reordenamiento desactivado.');
+    }
+}
+
+// Eventos de drag and drop
+function handleDragStart(e) {
+    if (!isReorderMode) {
+        e.preventDefault();
+        return;
+    }
+
+    draggedElement = this;
+    draggedIndex = Array.from(this.parentNode.children).indexOf(this);
+
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.outerHTML);
+
+    // Crear placeholder
+    const placeholder = document.createElement('div');
+    placeholder.className = 'contact-card drag-placeholder';
+    placeholder.style.height = this.offsetHeight + 'px';
+    this.parentNode.insertBefore(placeholder, this.nextSibling);
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+
+    // Remover placeholder
+    const placeholder = document.querySelector('.drag-placeholder');
+    if (placeholder) {
+        placeholder.remove();
+    }
+
+    // Remover clases de drag over
+    document.querySelectorAll('.contact-card').forEach(card => {
+        card.classList.remove('drag-over');
+    });
+
+    draggedElement = null;
+    draggedIndex = -1;
+}
+
+function handleDragOver(e) {
+    if (!isReorderMode) return;
+
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+}
+
+function handleDragEnter(e) {
+    if (!isReorderMode) return;
+
+    e.preventDefault();
+    if (this !== draggedElement) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    if (!isReorderMode) return;
+
+    // Solo remover si realmente salimos del elemento
+    if (!this.contains(e.relatedTarget)) {
+        this.classList.remove('drag-over');
+    }
+}
+
+function handleDrop(e) {
+    if (!isReorderMode) return;
+
+    e.preventDefault();
+    this.classList.remove('drag-over');
+
+    if (this !== draggedElement) {
+        const dropIndex = Array.from(this.parentNode.children).indexOf(this);
+
+        // Reordenar elementos
+        if (draggedIndex < dropIndex) {
+            this.parentNode.insertBefore(draggedElement, this.nextSibling);
+        } else {
+            this.parentNode.insertBefore(draggedElement, this);
+        }
+
+        // Guardar nuevo orden
+        saveNewOrder();
+
+        // Mostrar feedback
+        draggedElement.classList.add('drag-success');
+        setTimeout(() => {
+            draggedElement.classList.remove('drag-success');
+        }, 600);
+
+        showToast('Orden de contactos actualizado', 'success', 2000);
+        announceToScreenReader('Orden de contactos actualizado');
+    }
+}
+
+// Función para guardar el nuevo orden
+function saveNewOrder() {
+    const contactCards = document.querySelectorAll('.contact-card');
+    const newOrder = Array.from(contactCards).map(card => {
+        return parseInt(card.getAttribute('data-contact-id'));
+    });
+
+    // En una aplicación real, aquí enviarías el nuevo orden al servidor
+    localStorage.setItem('contactOrder', JSON.stringify(newOrder));
+
+    // Simular actualización del orden
+    console.log('Nuevo orden de contactos:', newOrder);
+}
+
+// Función para restaurar orden guardado
+function restoreOrder() {
+    const savedOrder = localStorage.getItem('contactOrder');
+    if (savedOrder) {
+        const order = JSON.parse(savedOrder);
+        const container = document.querySelector('.contacts-container');
+
+        // Reordenar elementos según el orden guardado
+        order.forEach(contactId => {
+            const card = document.querySelector(`[data-contact-id="${contactId}"]`);
+            if (card) {
+                container.appendChild(card);
+            }
+        });
+    }
+}

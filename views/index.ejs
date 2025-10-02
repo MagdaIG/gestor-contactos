@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contactos - Mi Agenda</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -20,20 +20,25 @@
                 </a>
                 <h1>CONTACT LIST</h1>
             </div>
-            <div class="header-actions">
-                <button class="action-btn search-btn" onclick="toggleSearch()" title="Buscar contactos">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <a href="/contactos/nuevo" class="action-btn add-btn" title="Agregar nuevo contacto">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>
-            </div>
+                <div class="header-actions">
+                    <button class="action-btn search-btn" onclick="toggleSearch()" title="Buscar contactos">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button class="action-btn reorder-toggle" onclick="toggleReorderMode()" title="Reordenar contactos">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 6h8M8 12h8M8 18h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <a href="/contactos/nuevo" class="action-btn add-btn" title="Agregar nuevo contacto">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
         </div>
     </header>
 
@@ -130,11 +135,16 @@
                         contactos.forEach((contacto, index) => {
                             const color = contacto.color || coloresPasteles[index % coloresPasteles.length];
                         %>
-                            <div class="contact-card" data-contact-id="<%= contacto.id %>" style="background-color: <%= color %>">
-                                    <div class="contact-header">
-                                        <div class="contact-avatar">
-                                            <img src="/images/contact.png" alt="Avatar de contacto" class="avatar-image">
-                                        </div>
+        <div class="contact-card" data-contact-id="<%= contacto.id %>" style="background-color: <%= color %>" draggable="true">
+            <button class="reorder-btn" title="Arrastrar para reordenar">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 6h8M8 12h8M8 18h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="contact-header">
+                <div class="contact-avatar">
+                    <img src="/images/contact.png" alt="Avatar de contacto" class="avatar-image">
+                </div>
                                         <div class="contact-info">
                                             <div class="contact-name-row">
                                                 <h3 class="contact-name">NAME:</h3>
@@ -371,6 +381,8 @@
         }
 
         function toggleFavorite(id) {
+            showLoading('Actualizando favorito...');
+
             fetch(`/contactos/toggle-favorito/${id}`, {
                 method: 'POST',
                 headers: {
@@ -379,6 +391,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                hideLoading();
                 if (data.success) {
                     const favoriteBtn = document.querySelector(`[onclick="toggleFavorite(${id})"]`);
                     const svg = favoriteBtn.querySelector('svg path');
@@ -386,19 +399,20 @@
                     if (data.favorito) {
                         favoriteBtn.classList.add('favorito-activo');
                         svg.setAttribute('fill', 'currentColor');
-                        showAlert('Favorito Agregado', 'El contacto ha sido agregado a favoritos', 'success');
+                        showToast('Contacto agregado a favoritos', 'success');
                     } else {
                         favoriteBtn.classList.remove('favorito-activo');
                         svg.setAttribute('fill', 'none');
-                        showAlert('Favorito Removido', 'El contacto ha sido removido de favoritos', 'info');
+                        showToast('Contacto removido de favoritos', 'info');
                     }
                 } else {
-                    showAlert('Error', 'No se pudo cambiar el estado de favorito', 'error');
+                    showToast('Error al actualizar favorito', 'error');
                 }
             })
             .catch(error => {
+                hideLoading();
                 console.error('Error:', error);
-                showAlert('Error', 'No se pudo cambiar el estado de favorito', 'error');
+                showToast('Error de conexión', 'error');
             });
         }
 

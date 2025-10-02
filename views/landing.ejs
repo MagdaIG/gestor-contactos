@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="/css/landing.css">
+    <link rel="stylesheet" href="/css/landing.css?v=<%= Date.now() %>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,20 +14,20 @@
             <div class="app-title">
                 <h1>CONTACT LIST</h1>
             </div>
-            <div class="header-actions">
-                <button class="action-btn search-btn" onclick="toggleSearch()" title="Buscar contactos">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <a href="/contactos/nuevo" class="action-btn add-btn" title="Agregar nuevo contacto">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>
-            </div>
+                   <div class="header-actions">
+                       <button class="action-btn search-btn" onclick="toggleSearch()" title="Buscar contactos">
+                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                               <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                           </svg>
+                       </button>
+                       <a href="/contactos/nuevo" class="action-btn add-btn" title="Agregar nuevo contacto">
+                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                               <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                           </svg>
+                       </a>
+                   </div>
         </div>
     </header>
 
@@ -214,19 +214,20 @@
     </footer>
 
     <script src="/js/landing.js"></script>
-    <script>
-        // Función para toggle de búsqueda
-        function toggleSearch() {
-            const searchBar = document.getElementById('searchBar');
-            const searchInput = searchBar.querySelector('.search-input');
+           <script>
+               // Función para toggle de búsqueda
+               function toggleSearch() {
+                   const searchBar = document.getElementById('searchBar');
+                   const searchInput = searchBar.querySelector('.search-input');
 
-            if (searchBar.style.display === 'none' || searchBar.style.display === '') {
-                searchBar.style.display = 'block';
-                searchInput.focus();
-            } else {
-                searchBar.style.display = 'none';
-            }
-        }
-    </script>
+                   if (searchBar.style.display === 'none' || searchBar.style.display === '') {
+                       searchBar.style.display = 'block';
+                       searchInput.focus();
+                   } else {
+                       searchBar.style.display = 'none';
+                   }
+               }
+
+           </script>
 </body>
 </html>
