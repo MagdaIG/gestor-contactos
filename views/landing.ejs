@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/landing.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header de la aplicación -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="app-title">
+                <h1>CONTACT LIST</h1>
+            </div>
+            <div class="header-actions">
+                <button class="action-btn search-btn" onclick="toggleSearch()" title="Buscar contactos">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <a href="/contactos/nuevo" class="action-btn add-btn" title="Agregar nuevo contacto">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra de búsqueda (inicialmente oculta) -->
+    <div class="search-bar" id="searchBar" style="display: none;">
+        <form action="/contactos/buscar" method="GET" class="search-form">
+            <div class="search-input-container">
+                <input type="text" name="q" placeholder="Buscar contactos por nombre, teléfono o email..." class="search-input" required>
+                <button type="submit" class="search-submit-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="highlight">Gestor de Contactos</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Gestiona todos tus contactos, favoritos, cumpleaños y eventos en un solo lugar.
+                </p>
+            </div>
+            <div class="options-section">
+                <h2 class="options-title">Opciones Disponibles</h2>
+                <p class="options-subtitle">Selecciona la funcionalidad que deseas usar</p>
+                <div class="options-grid">
+                <!-- Contactos -->
+                <div class="project-card contact-card">
+                    <div class="card-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Todos los Contactos</h3>
+                        <p class="card-description">Gestiona todos tus contactos con colores personalizados, emoticones y búsqueda alfabética</p>
+                        <div class="card-features">
+                            <span class="feature-tag">CRUD Completo</span>
+                            <span class="feature-tag">Búsqueda</span>
+                            <span class="feature-tag">Colores</span>
+                        </div>
+                        <a href="/contactos" class="card-link">
+                            <span>Ver Contactos</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14m-7-7 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contactos Favoritos -->
+                <div class="project-card favorites-card">
+                    <div class="card-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Contactos Favoritos</h3>
+                        <p class="card-description">Acceso rápido a tus contactos más importantes marcados como favoritos</p>
+                        <div class="card-features">
+                            <span class="feature-tag">Favoritos</span>
+                            <span class="feature-tag">Acceso Rápido</span>
+                            <span class="feature-tag">Prioridad</span>
+                        </div>
+                        <a href="/contactos?favorites=true" class="card-link">
+                            <span>Ver Favoritos</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14m-7-7 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Próximos Cumpleaños -->
+                <div class="project-card birthdays-card">
+                    <div class="card-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 21v-2a4 4 0 0 1 4-4h.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Próximos Cumpleaños</h3>
+                        <p class="card-description">Nunca olvides un cumpleaños importante con recordatorios de fechas próximas</p>
+                        <div class="card-features">
+                            <span class="feature-tag">Recordatorios</span>
+                            <span class="feature-tag">Fechas</span>
+                            <span class="feature-tag">Notificaciones</span>
+                        </div>
+                        <a href="/contactos?view=birthdays" class="card-link">
+                            <span>Ver Cumpleaños</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14m-7-7 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Eventos de Contactos -->
+                <div class="project-card events-card">
+                    <div class="card-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Eventos de Contactos</h3>
+                        <p class="card-description">Programa llamadas, reuniones y eventos importantes con tus contactos</p>
+                        <div class="card-features">
+                            <span class="feature-tag">Llamadas</span>
+                            <span class="feature-tag">Reuniones</span>
+                            <span class="feature-tag">Eventos</span>
+                        </div>
+                        <a href="/contactos?view=events" class="card-link">
+                            <span>Ver Eventos</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14m-7-7 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h4>Magdalena Inalaf</h4>
+                    <p>Desarrolladora Full Stack</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/MagdaIG" target="_blank" rel="noopener noreferrer" class="footer-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        GitHub
+                    </a>
+                    <a href="https://www.linkedin.com/in/minalaf/" target="_blank" rel="noopener noreferrer" class="footer-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://inalaf.ca/" target="_blank" rel="noopener noreferrer" class="footer-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12h20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Web
+                    </a>
+                    <a href="mailto:magda.inalaf@gmail.com" class="footer-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Email
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Contact List. Desarrollado con Node.js y Express por Magdalena Inalaf.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/landing.js"></script>
+    <script>
+        // Función para toggle de búsqueda
+        function toggleSearch() {
+            const searchBar = document.getElementById('searchBar');
+            const searchInput = searchBar.querySelector('.search-input');
+
+            if (searchBar.style.display === 'none' || searchBar.style.display === '') {
+                searchBar.style.display = 'block';
+                searchInput.focus();
+            } else {
+                searchBar.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

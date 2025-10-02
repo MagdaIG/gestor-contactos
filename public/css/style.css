@@ -66,6 +66,31 @@ body {
     padding: 0 1rem;
 }
 
+.app-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.home-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.home-link:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
 .app-title h1 {
     font-size: 1.875rem;
     font-weight: 700;
@@ -455,16 +480,71 @@ body {
     transform: translateY(-2px) scale(1.1);
 }
 
-.favorite-btn.favorited {
+.favorite-btn.favorited,
+.favorite-btn.favorito-activo {
     background: linear-gradient(135deg, var(--favorite-color), #be185d);
     color: var(--white);
     border-color: var(--favorite-color);
     animation: heartbeat 1.5s ease-in-out infinite;
 }
 
+.birthday-info {
+    background: rgba(236, 72, 153, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid rgba(236, 72, 153, 0.2);
+}
+
+.birthday-days {
+    color: #ec4899;
+    font-weight: 600;
+}
+
 @keyframes heartbeat {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
+}
+
+/* Estilos para eventos */
+.evento-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: white;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-select:hover {
+    border-color: var(--primary-light);
+}
+
+.form-help {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .evento-inputs {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
 }
 
 .contact-details {

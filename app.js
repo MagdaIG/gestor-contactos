@@ -17,8 +17,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Rutas
-app.use('/', contactosRouter);
+// Ruta principal - Landing page
+app.get('/', (req, res) => {
+    res.render('landing', {
+        title: 'Magdalena Inalaf - Portfolio'
+    });
+});
+
+// Rutas del gestor de contactos
+app.use('/contactos', contactosRouter);
 
 // Middleware para manejo de errores 404
 app.use((req, res, next) => {

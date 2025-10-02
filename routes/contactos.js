@@ -5,13 +5,34 @@ const contactosManager = require('../data/contactosManager');
 // Página principal - Listar todos los contactos
 router.get('/', (req, res) => {
     try {
-        const contactos = contactosManager.getAllContactos();
+        let contactos;
+        let titulo = 'Mi Agenda de Contactos';
+        let vistaActiva = 'todos';
+
+        // Verificar qué vista mostrar
+        if (req.query.favorites === 'true') {
+            contactos = contactosManager.getContactosFavoritos();
+            titulo = 'Contactos Favoritos';
+            vistaActiva = 'favoritos';
+        } else if (req.query.view === 'birthdays') {
+            contactos = contactosManager.getProximosCumpleanos();
+            titulo = 'Próximos Cumpleaños';
+            vistaActiva = 'cumpleanos';
+        } else if (req.query.view === 'events') {
+            contactos = contactosManager.getEventosContactos();
+            titulo = 'Eventos de Contactos';
+            vistaActiva = 'eventos';
+        } else {
+            contactos = contactosManager.getAllContactos();
+        }
+
         const letrasDisponibles = contactosManager.getAvailableLetters();
         res.render('index', {
-            title: 'Mi Agenda de Contactos',
+            title: titulo,
             contactos: contactos,
             letrasDisponibles: letrasDisponibles,
             letraActiva: null,
+            vistaActiva: vistaActiva,
             message: req.query.message || null,
             error: req.query.error || null
         });
@@ -22,6 +43,7 @@ router.get('/', (req, res) => {
             contactos: [],
             letrasDisponibles: [],
             letraActiva: null,
+            vistaActiva: 'todos',
             error: 'Error al cargar los contactos'
         });
     }
@@ -29,38 +51,38 @@ router.get('/', (req, res) => {
 
 // Mostrar formulario para agregar nuevo contacto
 router.get('/nuevo', (req, res) => {
-    res.render('formulario', {
-        title: 'Agregar Nuevo Contacto',
-        contacto: null,
-        action: '/nuevo',
-        method: 'POST'
-    });
+        res.render('formulario', {
+            title: 'Agregar Nuevo Contacto',
+            contacto: null,
+            action: '/contactos/nuevo',
+            method: 'POST'
+        });
 });
 
 // Procesar nuevo contacto
 router.post('/nuevo', (req, res) => {
     try {
-        const { nombre, telefono, email, color, emoticon } = req.body;
+        const { nombre, telefono, email, color, emoticon, cumpleanos, tipoEvento, fechaEvento } = req.body;
 
         // Validación básica
         if (!nombre || !telefono || !email) {
             return res.render('formulario', {
                 title: 'Agregar Nuevo Contacto',
-                contacto: { nombre, telefono, email, color, emoticon },
-                action: '/nuevo',
+                contacto: { nombre, telefono, email, color, emoticon, cumpleanos, tipoEvento, fechaEvento },
+                action: '/contactos/nuevo',
                 method: 'POST',
                 error: 'Todos los campos son obligatorios'
             });
         }
 
-        const nuevoContacto = contactosManager.addContacto(nombre, telefono, email, color, emoticon);
-        res.redirect('/?message=Contacto agregado exitosamente');
+        const nuevoContacto = contactosManager.addContacto(nombre, telefono, email, color, emoticon, cumpleanos, false, tipoEvento, fechaEvento);
+        res.redirect('/contactos?message=Contacto agregado exitosamente');
     } catch (error) {
         console.error('Error al agregar contacto:', error);
         res.render('formulario', {
             title: 'Agregar Nuevo Contacto',
             contacto: req.body,
-            action: '/nuevo',
+            action: '/contactos/nuevo',
             method: 'POST',
             error: 'Error al agregar el contacto'
         });
@@ -73,46 +95,47 @@ router.get('/editar/:id', (req, res) => {
         const contacto = contactosManager.getContactoById(req.params.id);
 
         if (!contacto) {
-            return res.redirect('/?error=Contacto no encontrado');
+            return res.redirect('/contactos?error=Contacto no encontrado');
         }
 
         res.render('formulario', {
             title: 'Editar Contacto',
             contacto: contacto,
-            action: `/editar/${contacto.id}`,
+            action: `/contactos/editar/${contacto.id}`,
             method: 'POST'
         });
     } catch (error) {
         console.error('Error al cargar contacto para editar:', error);
-        res.redirect('/?error=Error al cargar el contacto');
+        res.redirect('/contactos?error=Error al cargar el contacto');
     }
 });
 
 // Procesar edición de contacto
 router.post('/editar/:id', (req, res) => {
     try {
-        const { nombre, telefono, email, color, emoticon } = req.body;
+        const { nombre, telefono, email, color, emoticon, cumpleanos, tipoEvento, fechaEvento } = req.body;
         const id = req.params.id;
 
         // Validación básica
         if (!nombre || !telefono || !email) {
             return res.render('formulario', {
                 title: 'Editar Contacto',
-                contacto: { id, nombre, telefono, email, color, emoticon },
-                action: `/editar/${id}`,
+                contacto: { id, nombre, telefono, email, color, emoticon, cumpleanos, tipoEvento, fechaEvento },
+                action: `/contactos/editar/${id}`,
                 method: 'POST',
                 error: 'Todos los campos son obligatorios'
             });
         }
 
-        contactosManager.updateContacto(id, nombre, telefono, email, color, emoticon);
-        res.redirect('/?message=Contacto actualizado exitosamente');
+        const contactoActual = contactosManager.getContactoById(id);
+        contactosManager.updateContacto(id, nombre, telefono, email, color, emoticon, cumpleanos, contactoActual.favorito, tipoEvento, fechaEvento);
+        res.redirect('/contactos?message=Contacto actualizado exitosamente');
     } catch (error) {
         console.error('Error al actualizar contacto:', error);
         res.render('formulario', {
             title: 'Editar Contacto',
             contacto: { ...req.body, id: req.params.id },
-            action: `/editar/${req.params.id}`,
+            action: `/contactos/editar/${req.params.id}`,
             method: 'POST',
             error: 'Error al actualizar el contacto'
         });
@@ -123,10 +146,10 @@ router.post('/editar/:id', (req, res) => {
 router.post('/eliminar/:id', (req, res) => {
     try {
         contactosManager.deleteContacto(req.params.id);
-        res.redirect('/?message=Contacto eliminado exitosamente');
+        res.redirect('/contactos?message=Contacto eliminado exitosamente');
     } catch (error) {
         console.error('Error al eliminar contacto:', error);
-        res.redirect('/?error=Error al eliminar el contacto');
+        res.redirect('/contactos?error=Error al eliminar el contacto');
     }
 });
 
@@ -187,6 +210,17 @@ router.get('/letra/:letter', (req, res) => {
             letraActiva: null,
             error: 'Error al filtrar contactos por letra'
         });
+    }
+});
+
+// Toggle favorito
+router.post('/toggle-favorito/:id', (req, res) => {
+    try {
+        const contacto = contactosManager.toggleFavorito(req.params.id);
+        res.json({ success: true, favorito: contacto.favorito });
+    } catch (error) {
+        console.error('Error al cambiar favorito:', error);
+        res.status(500).json({ success: false, error: 'Error al cambiar favorito' });
     }
 });
 

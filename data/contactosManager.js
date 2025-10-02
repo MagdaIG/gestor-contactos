@@ -25,14 +25,18 @@ class ContactosManager {
 
             const contactos = data.trim().split('\n').map(line => {
                 const parts = line.split('|');
-                const [id, nombre, telefono, email, color, emoticon] = parts;
+                const [id, nombre, telefono, email, color, emoticon, cumpleanos, favorito, tipoEvento, fechaEvento] = parts;
                 return {
                     id: parseInt(id),
                     nombre: nombre || '',
                     telefono: telefono || '',
                     email: email || '',
                     color: color || '#FFB3BA', // Color por defecto
-                    emoticon: emoticon || '' // Emoticon por defecto (vacío)
+                    emoticon: emoticon || '', // Emoticon por defecto (vacío)
+                    cumpleanos: cumpleanos || '', // Fecha de cumpleaños
+                    favorito: favorito === 'true', // Favorito (boolean)
+                    tipoEvento: tipoEvento || '', // Tipo de evento
+                    fechaEvento: fechaEvento || '' // Fecha del evento
                 };
             });
 
@@ -60,7 +64,7 @@ class ContactosManager {
     }
 
     // Agregar nuevo contacto
-    addContacto(nombre, telefono, email, color = '#FFB3BA', emoticon = '') {
+    addContacto(nombre, telefono, email, color = '#FFB3BA', emoticon = '', cumpleanos = '', favorito = false, tipoEvento = '', fechaEvento = '') {
         try {
             const contactos = this.getAllContactos();
             const nuevoId = this.getNextId();
@@ -70,7 +74,11 @@ class ContactosManager {
                 telefono: telefono.trim(),
                 email: email.trim(),
                 color: color,
-                emoticon: emoticon
+                emoticon: emoticon,
+                cumpleanos: cumpleanos,
+                favorito: favorito,
+                tipoEvento: tipoEvento,
+                fechaEvento: fechaEvento
             };
 
             contactos.push(nuevoContacto);
@@ -83,7 +91,7 @@ class ContactosManager {
     }
 
     // Actualizar contacto existente
-    updateContacto(id, nombre, telefono, email, color = '#FFB3BA', emoticon = '') {
+    updateContacto(id, nombre, telefono, email, color = '#FFB3BA', emoticon = '', cumpleanos = '', favorito = false, tipoEvento = '', fechaEvento = '') {
         try {
             const contactos = this.getAllContactos();
             const index = contactos.findIndex(contacto => contacto.id === parseInt(id));
@@ -98,7 +106,11 @@ class ContactosManager {
                 telefono: telefono.trim(),
                 email: email.trim(),
                 color: color,
-                emoticon: emoticon
+                emoticon: emoticon,
+                cumpleanos: cumpleanos,
+                favorito: favorito,
+                tipoEvento: tipoEvento,
+                fechaEvento: fechaEvento
             };
 
             this.saveContactos(contactos);
@@ -132,7 +144,7 @@ class ContactosManager {
     saveContactos(contactos) {
         try {
             const data = contactos.map(contacto =>
-                `${contacto.id}|${contacto.nombre}|${contacto.telefono}|${contacto.email}|${contacto.color || '#FFB3BA'}|${contacto.emoticon || ''}`
+                `${contacto.id}|${contacto.nombre}|${contacto.telefono}|${contacto.email}|${contacto.color || '#FFB3BA'}|${contacto.emoticon || ''}|${contacto.cumpleanos || ''}|${contacto.favorito || false}|${contacto.tipoEvento || ''}|${contacto.fechaEvento || ''}`
             ).join('\n');
 
             fs.writeFileSync(CONTACTOS_FILE, data, 'utf8');
@@ -178,6 +190,81 @@ class ContactosManager {
         });
 
         return Array.from(letras).sort();
+    }
+
+    // Obtener contactos favoritos
+    getContactosFavoritos() {
+        const contactos = this.getAllContactos();
+        return contactos.filter(contacto => contacto.favorito);
+    }
+
+    // Obtener próximos cumpleaños (próximos 30 días)
+    getProximosCumpleanos() {
+        const contactos = this.getAllContactos();
+        const hoy = new Date();
+        const proximosCumpleanos = [];
+
+        contactos.forEach(contacto => {
+            if (contacto.cumpleanos) {
+                const [dia, mes] = contacto.cumpleanos.split('/');
+                const cumpleanos = new Date(hoy.getFullYear(), mes - 1, dia);
+
+                // Si ya pasó este año, calcular para el próximo año
+                if (cumpleanos < hoy) {
+                    cumpleanos.setFullYear(hoy.getFullYear() + 1);
+                }
+
+                const diasRestantes = Math.ceil((cumpleanos - hoy) / (1000 * 60 * 60 * 24));
+
+                if (diasRestantes <= 30) {
+                    proximosCumpleanos.push({
+                        ...contacto,
+                        diasRestantes,
+                        fechaCumpleanos: cumpleanos
+                    });
+                }
+            }
+        });
+
+        return proximosCumpleanos.sort((a, b) => a.diasRestantes - b.diasRestantes);
+    }
+
+    // Obtener eventos de contactos
+    getEventosContactos() {
+        const contactos = this.getAllContactos();
+        const contactosConEventos = [];
+
+        contactos.forEach((contacto) => {
+            if (contacto.tipoEvento && contacto.fechaEvento) {
+                const fecha = new Date(contacto.fechaEvento);
+                contactosConEventos.push({
+                    ...contacto,
+                    tipo: contacto.tipoEvento,
+                    fecha: fecha
+                });
+            }
+        });
+
+        return contactosConEventos.sort((a, b) => a.fecha - b.fecha);
+    }
+
+    // Toggle favorito
+    toggleFavorito(id) {
+        try {
+            const contactos = this.getAllContactos();
+            const index = contactos.findIndex(contacto => contacto.id === parseInt(id));
+
+            if (index === -1) {
+                throw new Error('Contacto no encontrado');
+            }
+
+            contactos[index].favorito = !contactos[index].favorito;
+            this.saveContactos(contactos);
+            return contactos[index];
+        } catch (error) {
+            console.error('Error al cambiar favorito:', error);
+            throw error;
+        }
     }
 }
 
